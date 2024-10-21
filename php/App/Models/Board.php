@@ -15,13 +15,33 @@ class Board
 
     private array $slots;
 
-    //public function __construct();
+    public function __construct(){
 
-    //private static function initializeBoard(): array //Inicialitza la graella amb valors buits
-    //public function setMovementOnBoard(int $column, int $player): array //Realitza un moviment en la graella
-    //public function checkWin(array $coord): bool //Comprova si hi ha un guanyador
-    //public function isValidMove(int $column): bool //Comprova si el moviment és vàlid
+    }
 
+    //Inicialitza la graella amb valors buits
+    private static function initializeBoard(){
+        $graella = array();
+        for ($i = 0; $i < 6; $i++) {
+            $fila = array();
+            for ($j = 0; $j < 7; $j++) {
+                $fila[] = 0;  
+            }
+            $graella[] = $fila;
+        }
+        return $graella;
+    } 
+    
+    //Realitza un moviment en la graella, retorna un array
+    public function setMovementOnBoard(int $column, int $player){
+        
+    }
+    
+    //Comprova si hi ha un guanyador
+    //public function checkWin(array $coord): bool 
+
+    //Comprova si el moviment és vàlid
+    //public function isValidMove(int $column): bool 
 
 }
 

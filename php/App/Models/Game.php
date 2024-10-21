@@ -15,7 +15,7 @@ class Game
 
     //public function __construct( Player $jugador1, Player $jugador2);
 
-    // getters i setters
+    //getters i setters
 
     //public function reset(): void //Reinicia el joc
     //public function play($columna)  //Realitza un moviment
