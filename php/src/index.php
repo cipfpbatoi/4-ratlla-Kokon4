@@ -6,7 +6,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../Helpers/functions.php';
 use Joc4enRatlla\Controllers\GameController;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $gameController = new GameController($_POST); 
+    //$gameController = new GameController($_POST); 
 } else {
     loadView('jugador');
 }
