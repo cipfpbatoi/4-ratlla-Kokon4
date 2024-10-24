@@ -82,5 +82,11 @@ class Board{
     return $isFull;
     }
     }
+
+    public function getBoard(){
+        return $this->slots;
+    }
+
+    
 }
 ?>

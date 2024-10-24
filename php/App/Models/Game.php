@@ -20,15 +20,37 @@ class Game
         $this->nextPlayer = 1;
     }
 
+    public function getBoard(): Board
+    {
+        $this->board->getBoard();
+        return $this->board;
+    }
+    
+    public function getPlayers(): array
+    {
+        return $this->players;
+    }
+
+    public function getWinner(): ?Player
+    {
+        return $this->winner;
+    }
+
+    public function getScores(): array 
+    {
+        return $this->scores;
+    }
+
+
     // TODO: getters i setters
 
     public function reset(): void{
         
     }
-    public function play($columna){
-        // TODO: Realitza un moviment
-    }
 
+    public function play($columna){
+       $this->board->setMovementOnBoard($columna, $this->nextPlayer);
+    }
 
     /**
     * Realitza moviment automàtic
