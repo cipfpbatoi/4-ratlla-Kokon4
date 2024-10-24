@@ -4,11 +4,11 @@
     <title>4 en ratlla</title>
     <style>
         .player1 {
-            background-color: <?= $players[1]->getColor() ?> ; /* Color   per un dels jugadors */
+            background-color: <?= $players[1]->getColor() ?> ; /* Color vermell per un dels jugadors */
         }
 
         .player2 {
-            background-color:  <?= $players[2]->getColor() ?>; /* Color   per l'altre jugador */
+            background-color:  <?= $players[2]->getColor() ?>; /* Color groc per l'altre jugador */
         }
 
     </style>
@@ -21,5 +21,6 @@
      <input type="submit" name="exit" value="Acabar joc">
 </form>
  <?php include_once $_SERVER['DOCUMENT_ROOT'].'/../Views/partials/panel.view.php'  ?>
+ 
 </body>
 </html>
