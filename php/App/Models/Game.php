@@ -14,17 +14,22 @@ class Game
     private array $scores = [1 => 0, 2 => 0];
 
     public function __construct( Player $jugador1, Player $jugador2){
-        // TODO: S'han d'inicialitzar les variables tenint en compte que el array de jugador ha de començar amb l'index 1 
+        // TODO: S'han d'inicialitzar les variables tenint en compte que el array de jugador ha de començar amb l'index 1
+        $this->board = new Board();
+        $this->players = [$jugador1, $jugador2];
+        $this->nextPlayer = 1;
     }
 
     // TODO: getters i setters
 
     public function reset(): void{
-        // TODO: Reinicia el joc
+        
     }
     public function play($columna){
         // TODO: Realitza un moviment
     }
+
+
     /**
     * Realitza moviment automàtic
     * @return void
@@ -69,9 +74,19 @@ class Game
         $this->play($inthemiddle);
     }
     public function save(){
-        // TODO: Guarda l'estat del joc a les sessions
+        $_SESSION['board'] = $this->board;
+        $_SESSION['nextPlayer'] = $this->nextPlayer;
+        $_SESSION['players'] = $this->players;
+        $_SESSION['winner'] = $this->winner;
+        $_SESSION['scores'] = $this->scores;
     }
     public static function restore(){
+        $board = $_SESSION['board'];
+        $nextPlayer = $_SESSION['nextPlayer'];
+        $players = $_SESSION['players'];
+        $winner = $_SESSION['winner'];
+        $scores = $_SESSION['scores'];
+
         // TODO: Restaura l'estat del joc de les sessions
         // Retornar la partida que estaba abans 
         // pq cada volta que buide la graella es borrara tot

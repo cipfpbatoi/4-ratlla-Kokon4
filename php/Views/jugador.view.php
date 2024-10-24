@@ -6,6 +6,17 @@
     <title>Document</title>
 </head>
 <body>
-    <p>Hola quin jugador eres? Quin color vas a jugar?</p>
+    <h1>Benvingut al joc 4EnRatlla</h1>
+<form action="index.php" method="POST">
+    <label for="nom">Nom del jugador</label>
+    <input type="text" name="nom" id="nom">
+    <label for="color">Color</label>
+    <select name="color" id="color">
+        <option value="vermell">Vermell</option>
+        <option value="verd">Verd</option>
+    </select>
+    <input type="submit" value="Jugar">
+</form>
+
 </body>
 </html>

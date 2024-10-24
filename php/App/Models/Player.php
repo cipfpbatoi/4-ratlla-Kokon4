@@ -9,11 +9,34 @@ class Player {
     private $isAutomatic; // Forma de jugar (automàtica/manual)
 
     public function __construct( $name, $color, $isAutomatic = false) {
-        // TODO: Inicialitzar variables 
+        $this->name = $name;
+        $this->color = $color;
+        $this->isAutomatic = false;
     }
 
-    // TODO: Getters i Setters 
+    public function getName(){
+        return $this->name;
+    }
 
+    public function getColor(){
+        return $this->color;
+    }
+
+    public function getIsAutomatic(){
+        return $this->isAutomatic;
+    }
+
+    public function setName($name){
+        $this->name = $name;
+    }
+
+    public function setColor($color){
+        $this->color = $color;
+    }
+
+    public function setAutomatic(){
+        $this->isAutomatic = true;
+    }
 }
 
 ?>

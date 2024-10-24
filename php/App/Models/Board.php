@@ -2,8 +2,7 @@
 
 namespace Joc4enRatlla\Models;
 
-class Board
-{
+class Board{
     public const FILES = 6;
     public const COLUMNS = 7;
     public const DIRECTIONS = [
@@ -16,30 +15,72 @@ class Board
     private array $slots; // graella
 
     public function __construct(){
-      // TODO: Ha d'inicializar $slots
+     $this->slots = self::initializeBoard();
     }
 
-    // TODO: Getters i Setters 
-
+    
     private static function initializeBoard(): array{
-        // TODO: Inicialitza la graella amb valors buits
+        $board = [];
+        for ($i = 0; $i < self::FILES; $i++) {
+            for ($j = 0; $j < self::COLUMNS; $j++) {
+                $board[$i][$j] = "";
+            }
+        }
+        return $board;
     }
+        
     public function setMovementOnBoard(int $column, int $player): array {
-        // TODO: Realitza un moviment en la graella
+       for($i = self::FILES - 1; $i >= 0; $i--) {
+           if($this->slots[$i][$column] == "") {
+               $this->slots[$i][$column] = $player;
+               break;
+           }
+       }
+       return $this->slots;
     }
-    public function checkWin(array $coord): bool {
-        // TODO: Comprova si hi ha un guanyador
+
+    public function checkWin(array $coords): bool {
+        $player = $this->slots[$coords[0]][$coords[1]];
+        foreach (self::DIRECTIONS as $direction) {
+            if ($this->checkDirection($coords, $player, $direction)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function checkDirection(array $coords, int $player, array $direction): bool {
+        $x = $coords[0] + $direction[0];
+        $y = $coords[1] + $direction[1];
+        $count = 1;
+        while (isset($this->slots[$x][$y]) && $this->slots[$x][$y] == $player) {
+            $x += $direction[0];
+            $y += $direction[1];
+            $count++;
+        }
+        return $count >= 4;
     }
     public function isValidMove(int $column): bool {
-        // TODO: Comprova si el moviment és vàlid
+        return $column >= 0 && $column < self::COLUMNS && $this->slots[0][$column] === null;
     }
 
+    public function comprovarEmpat($graella) {
+        foreach ($graella[0] as $celda) {
+            if ($celda == 0) {
+                return false;  
+            }
+        }
+        return true;  
+    }
+    
     public function isFull(): bool {
-        // TODO: El tauler està ple?
+        $isFull = false;
+        foreach ($this->slots as $row) {
+            if (in_array("", $row)) {
+                $isFull = true;
     }
-
-
-
+    return $isFull;
+    }
+    }
 }
-
 ?>
