@@ -10,6 +10,5 @@ class Service
         extract($data);
 
         include  $_SERVER['DOCUMENT_ROOT'] . "/../Views/$viewPath.view.php";
-
     }
 }

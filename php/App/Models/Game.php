@@ -12,51 +12,55 @@ class Game
     private array $players;
     private ?Player $winner;
     private array $scores = [1 => 0, 2 => 0];
+    private $victories;
 
-    public function __construct( Player $jugador1, Player $jugador2){
-        // TODO: S'han d'inicialitzar les variables tenint en compte que el array de jugador ha de començar amb l'index 1
+    public function __construct(Player $jugador1, Player $jugador2) {
         $this->board = new Board();
-        $this->players = [$jugador1, $jugador2];
-        $this->nextPlayer = 1;
+        $this->players = [1 => $jugador1, 2 => $jugador2]; 
+        $this->nextPlayer = 1; 
+        $this->winner = null;
+        $this->victories = [1 => 0, 2 => 0];
     }
 
-    public function getBoard(): Board
-    {
-        $this->board->getBoard();
+    public function getBoard(): Board {
         return $this->board;
     }
     
-    public function getPlayers(): array
-    {
+    public function getPlayers(): array {
         return $this->players;
     }
 
-    public function getWinner(): ?Player
-    {
+    public function getWinner(): ?Player {
         return $this->winner;
     }
 
-    public function getScores(): array 
-    {
+    public function getScores(): array {
         return $this->scores;
     }
 
-
-    // TODO: getters i setters
-
-    public function reset(): void{
-        
+    public function reset(): void {
+        $this->board = new Board(); 
+        $this->nextPlayer = 1; 
+        $this->winner = null; 
+        $this->scores = [1 => 0, 2 => 0]; 
     }
+    
 
-    public function play($columna){
-       $this->board->setMovementOnBoard($columna, $this->nextPlayer);
+    public function play(int $columna): void {
+        if ($this->board->isValidMove($columna)) {
+            $coord = $this->board->setMovementOnBoard($columna, $this->nextPlayer);
+            if ($this->board->checkWin($coord)) {
+                $this->winner = $this->players[$this->nextPlayer];
+                $this->scores[$this->nextPlayer]++; 
+            }
+            $this->nextPlayer = $this->nextPlayer === 1 ? 2 : 1; 
+        }
     }
 
     /**
-    * Realitza moviment automàtic
-    * @return void
-    */                                          
-    public function playAutomatic(){
+    * Perform automatic move for the AI player
+    */
+    public function playAutomatic(): void {
         $opponent = $this->nextPlayer === 1 ? 2 : 1;
 
         for ($col = 1; $col <= Board::COLUMNS; $col++) {
@@ -75,46 +79,49 @@ class Game
             if ($this->board->isValidMove($col)) {
                 $tempBoard = clone($this->board);
                 $coord = $tempBoard->setMovementOnBoard($col, $opponent);
-                if ($tempBoard->checkWin($coord )) {
+                if ($tempBoard->checkWin($coord)) {
                     $this->play($col);
                     return;
                 }
             }
         }
 
-        $possibles = array();
+        $possibles = [];
         for ($col = 1; $col <= Board::COLUMNS; $col++) {
             if ($this->board->isValidMove($col)) {
                 $possibles[] = $col;
             }
         }
-        if (count($possibles)>2) {
-            $random = rand(-1,1);
+
+        if (!empty($possibles)) {
+            $randomIndex = array_rand($possibles);
+            $this->play($possibles[$randomIndex]);
         }
-        $middle = (int) (count($possibles) / 2)+$random;
-        $inthemiddle = $possibles[$middle];
-        $this->play($inthemiddle);
     }
-    public function save(){
-        $_SESSION['board'] = $this->board;
+
+    public function save(): void {
+        $_SESSION['board'] = serialize($this->board); 
         $_SESSION['nextPlayer'] = $this->nextPlayer;
-        $_SESSION['players'] = $this->players;
-        $_SESSION['winner'] = $this->winner;
+        $_SESSION['players'] = serialize($this->players);
+        $_SESSION['winner'] = $this->winner ? serialize($this->winner) : null; 
         $_SESSION['scores'] = $this->scores;
     }
-    public static function restore(){
-        $board = $_SESSION['board'];
+
+    public static function restore(): Game {
+        $board = unserialize($_SESSION['board']);
         $nextPlayer = $_SESSION['nextPlayer'];
-        $players = $_SESSION['players'];
-        $winner = $_SESSION['winner'];
+        $players = unserialize($_SESSION['players']);
+        $winner = isset($_SESSION['winner']) ? unserialize($_SESSION['winner']) : null;
         $scores = $_SESSION['scores'];
 
-        // TODO: Restaura l'estat del joc de les sessions
-        // Retornar la partida que estaba abans 
-        // pq cada volta que buide la graella es borrara tot
-        // i aci guarde les variables de sessio de la partida
-    }
+        $game = new self($players[1], $players[2]); 
+        $game->board = $board; 
+        $game->nextPlayer = $nextPlayer; 
+        $game->winner = $winner; 
+        $game->scores = $scores; 
 
+        return $game;
+    }
 }
 
 

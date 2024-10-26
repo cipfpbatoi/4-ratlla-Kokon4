@@ -12,81 +12,72 @@ class Board{
         [1, -1]   // Diagonal abajo-izquierda
     ];
 
-    private array $slots; // graella
+    private array $slots; 
 
     public function __construct(){
      $this->slots = self::initializeBoard();
     }
 
     
-    private static function initializeBoard(): array{
-        $board = [];
-        for ($i = 0; $i < self::FILES; $i++) {
-            for ($j = 0; $j < self::COLUMNS; $j++) {
-                $board[$i][$j] = "";
-            }
-        }
-        return $board;
+    private static function initializeBoard(): array {
+        return array_fill(1, self::FILES, array_fill(1, self::COLUMNS, 0));
     }
         
     public function setMovementOnBoard(int $column, int $player): array {
-       for($i = self::FILES - 1; $i >= 0; $i--) {
-           if($this->slots[$i][$column] == "") {
-               $this->slots[$i][$column] = $player;
-               break;
-           }
-       }
-       return $this->slots;
+        for ($row = self::FILES; $row >= 1; $row--) {
+            if ($this->slots[$row][$column] == 0) {
+                $this->slots[$row][$column] = $player;
+                return [$row, $column];
+            }
+        }
+        throw new \Exception("Column is full");
     }
 
-    public function checkWin(array $coords): bool {
-        $player = $this->slots[$coords[0]][$coords[1]];
+    public function checkWin(array $coord): bool {
+        $player = $this->slots[$coord[0]][$coord[1]];
         foreach (self::DIRECTIONS as $direction) {
-            if ($this->checkDirection($coords, $player, $direction)) {
-                return true;
+            $count = 1;
+            for ($multiplier = 1; $multiplier <= 3; $multiplier++) {
+                $newRow = $coord[0] + $direction[0] * $multiplier;
+                $newCol = $coord[1] + $direction[1] * $multiplier;
+                if ($this->isInBounds($newRow, $newCol) && $this->slots[$newRow][$newCol] == $player) {
+                    $count++;
+                } else {
+                    break;
+                }
             }
+            for ($multiplier = 1; $multiplier <= 3; $multiplier++) {
+                $newRow = $coord[0] - $direction[0] * $multiplier;
+                $newCol = $coord[1] - $direction[1] * $multiplier;
+                if ($this->isInBounds($newRow, $newCol) && $this->slots[$newRow][$newCol] == $player) {
+                    $count++;
+                } else {
+                    break;
+                }
+            }
+            if ($count >= 4) return true;
         }
         return false;
     }
 
-    private function checkDirection(array $coords, int $player, array $direction): bool {
-        $x = $coords[0] + $direction[0];
-        $y = $coords[1] + $direction[1];
-        $count = 1;
-        while (isset($this->slots[$x][$y]) && $this->slots[$x][$y] == $player) {
-            $x += $direction[0];
-            $y += $direction[1];
-            $count++;
-        }
-        return $count >= 4;
+    private function isInBounds(int $row, int $col): bool {
+        return $row >= 1 && $row <= self::FILES && $col >= 1 && $col <= self::COLUMNS;
     }
+
     public function isValidMove(int $column): bool {
-        return $column >= 0 && $column < self::COLUMNS && $this->slots[0][$column] === null;
+        return $this->slots[1][$column] == 0;
     }
 
-    public function comprovarEmpat($graella) {
-        foreach ($graella[0] as $celda) {
-            if ($celda == 0) {
-                return false;  
-            }
-        }
-        return true;  
-    }
-    
     public function isFull(): bool {
-        $isFull = false;
-        foreach ($this->slots as $row) {
-            if (in_array("", $row)) {
-                $isFull = true;
-    }
-    return $isFull;
-    }
+        for ($col = 1; $col <= self::COLUMNS; $col++) {
+            if ($this->isValidMove($col)) return false;
+        }
+        return true;
     }
 
-    public function getBoard(){
+    public function getSlots(): array {
         return $this->slots;
     }
-
     
 }
 ?>

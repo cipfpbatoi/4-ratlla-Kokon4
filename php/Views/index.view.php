@@ -1,6 +1,6 @@
 <html>
 <head>
-    <link rel="stylesheet" href="4ratlla.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="styles.css?<?php echo time(); ?>">
     <title>4 en ratlla</title>
     <style>
         .player1 {
@@ -21,6 +21,5 @@
      <input type="submit" name="exit" value="Acabar joc">
 </form>
  <?php include_once $_SERVER['DOCUMENT_ROOT'].'/../Views/partials/panel.view.php'  ?>
- 
 </body>
 </html>
