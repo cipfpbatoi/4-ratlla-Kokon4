@@ -11,13 +11,21 @@ class GameController
 
     public function __construct(array $request = [])
     {
+        $this->game = Game::restore() ?? $this->createNewGame();
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->handlePost($request);
-        } else {
-            $this->game = Game::restore();
         }
     }
-
+    
+    
+    private function createNewGame(): Game
+    {
+        $jugador1 = new Player("Player 1", "vermell");
+        $jugador2 = new Player("Player 2", "verd");
+        return new Game($jugador1, $jugador2);
+    }
+    
     private function handlePost(array $request): void
     {
         // Verifica que los datos requeridos estén en el request
@@ -36,32 +44,30 @@ class GameController
             
             // Guarda el estado del juego en la sesión
             $_SESSION['game'] = serialize($this->game);
-            $_SESSION['scores'] = [1 => 0, 2 => 0]; // Reiniciar puntuaciones
+            $_SESSION['scores'] = [1 => 0, 2 => 0]; 
         }
     }
 
     public function play(array $request)
     {
-        
-    
+        // Si el jugador decide cerrar sesión
         if (isset($request['exit'])) {
-            // Destruir la sesión
             session_destroy();
-            // Redirigir a la vista de inicio de sesión
-            Service::loadView('jugador.view.php'); 
-            return; // Salir del método
+            Service::loadView('jugador'); 
+            return; 
         }
     
-        // Manejo de otros movimientos de juego
+        // Reiniciar el juego
         if (isset($request['reset'])) {
             $this->game->reset();
-            $_SESSION['game'] = serialize($this->game);
         } elseif (isset($request['columna'])) {
             $this->game->play((int)$request['columna']);
-            $_SESSION['game'] = serialize($this->game);
         }
     
-        // Cargar la vista con el estado del juego
+        // Guarda el estado del juego actualizado en la sesión
+        $_SESSION['game'] = serialize($this->game);
+    
+        // Cargar la vista con el estado del juego actualizado
         $board = $this->game->getBoard();
         $players = $this->game->getPlayers();
         $winner = $this->game->getWinner();
@@ -69,4 +75,5 @@ class GameController
     
         Service::loadView('index', compact('board', 'players', 'winner', 'scores'));
     }
+    
 }    

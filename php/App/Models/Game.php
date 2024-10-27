@@ -107,21 +107,15 @@ class Game
         $_SESSION['scores'] = $this->scores;
     }
 
-    public static function restore(): Game {
-        $board = unserialize($_SESSION['board']);
-        $nextPlayer = $_SESSION['nextPlayer'];
-        $players = unserialize($_SESSION['players']);
-        $winner = isset($_SESSION['winner']) ? unserialize($_SESSION['winner']) : null;
-        $scores = $_SESSION['scores'];
-
-        $game = new self($players[1], $players[2]); 
-        $game->board = $board; 
-        $game->nextPlayer = $nextPlayer; 
-        $game->winner = $winner; 
-        $game->scores = $scores; 
-
-        return $game;
+    public static function restore(): ?Game
+    {
+        if (isset($_SESSION['game'])) {
+            return unserialize($_SESSION['game']);
+        }
+        return null;
     }
+    
+    
 }
 
 
