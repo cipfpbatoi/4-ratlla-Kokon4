@@ -2,42 +2,89 @@
 
 namespace Joc4enRatlla\Models;
 
+use Joc4enRatlla\Exceptions\IllegalMoveException;
 use Joc4enRatlla\Models\Board;
 use Joc4enRatlla\Models\Player;
 
+
+
+/**
+ * Classe Game
+ *  
+ * Representa un Joc amb la tabla, el seguent jugador els jugadors
+ * Si hi ha o no guanyador i el marcador.
+ */
 class Game
 {
+    /**
+     * @var Board La graella de la partida
+     * @var nextPlayer El index del seguent jugador de la partida
+     * @var players Llista de jugadors
+     * @var winner Guanyador de la partida
+     * @var scores Llista de puntuacio per reiniciar les puntuacions
+     */
     private Board $board;
     private int $nextPlayer;
     private array $players;
     private ?Player $winner;
-    private array $scores = [1 => 0, 2 => 0];
-    private $victories;
+    private array $scores;
 
+
+    /**
+     * Constructor de la classe Game
+     *
+     * @param Player $jugador1 El jugador 1
+     * @param Player $jugador2 El jugador 2
+     */
     public function __construct(Player $jugador1, Player $jugador2) {
         $this->board = new Board();
         $this->players = [1 => $jugador1, 2 => $jugador2]; 
         $this->nextPlayer = 1; 
         $this->winner = null;
-        $this->victories = [1 => 0, 2 => 0];
+        $this->scores = [1 => 0, 2 => 0];
     }
 
+    /**
+     * Obte la graella
+     * @return Board Retorna un objecte graella
+     */
     public function getBoard(): Board {
         return $this->board;
     }
     
+    /**
+     * Obte la llista de jugadors
+     *
+     * @return array La llista de jugadors
+     */
     public function getPlayers(): array {
         return $this->players;
     }
 
+    /**
+     * Obte el guanyador de la partida
+     *
+     * @return Player|null Retorna el Player guanyador o null per que encara no hi ha guanyador
+     */
     public function getWinner(): ?Player {
         return $this->winner;
     }
 
+
+    /**
+     * Obte el marcador de les partides
+     *
+     * @return array retorna la puntuacio dels jugadors 
+     */
     public function getScores(): array {
         return $this->scores;
     }
+   
 
+    /**
+     * Resetea la partida
+     * @return void
+     */
     public function reset(): void {
         $this->board = new Board(); 
         $this->nextPlayer = 1; 
@@ -46,6 +93,13 @@ class Game
     }
     
 
+
+    /**
+     * Gestiona el fluxe de partida
+     *
+     * @param integer $columna El numero de la columna 
+     * @return void
+     */
     public function play(int $columna): void {
         if ($this->board->isValidMove($columna)) {
             $coord = $this->board->setMovementOnBoard($columna, $this->nextPlayer);
@@ -54,6 +108,8 @@ class Game
                 $this->scores[$this->nextPlayer]++; 
             }
             $this->nextPlayer = $this->nextPlayer === 1 ? 2 : 1; 
+        } else {
+            throw new IllegalMoveException('Invalid move');
         }
     }
 
@@ -83,6 +139,8 @@ class Game
                     $this->play($col);
                     return;
                 }
+            } else {
+                throw new IllegalMoveException('Invalid move');
             }
         }
 
@@ -99,6 +157,12 @@ class Game
         }
     }
 
+
+    /**
+     * Guarda los atributos de la partida en la sesion
+     *
+     * @return void
+     */
     public function save(): void {
         $_SESSION['board'] = serialize($this->board); 
         $_SESSION['nextPlayer'] = $this->nextPlayer;
@@ -107,6 +171,11 @@ class Game
         $_SESSION['scores'] = $this->scores;
     }
 
+
+    /**
+     * Restaura les dades de la partida anterior
+     * @return Game|null Retorna les dades de la partida anterior si hi hagueren.
+     */
     public static function restore(): ?Game
     {
         if (isset($_SESSION['game'])) {
@@ -114,9 +183,5 @@ class Game
         }
         return null;
     }
-    
-    
 }
-
-
 ?>
