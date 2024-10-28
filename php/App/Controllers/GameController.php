@@ -37,7 +37,7 @@ class GameController
 
             $jugador1 = new Player($nombreJugador1, $colorJugador1);
             if ($modoAutomatico) {
-                $jugador2 = new Player("Maquina", $colorJugador1 === 'vermell' ? 'verd' : 'vermell');
+                $jugador2 = new Player("Maquina",$colorJugador1 === 'vermell' ? 'verd' : 'vermell', $modoAutomatico);
             } else {
                 $jugador2 = new Player($nombreJugador2, $colorJugador1 === 'vermell' ? 'verd' : 'vermell', $modoAutomatico);
             }
