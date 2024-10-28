@@ -42,7 +42,7 @@ class Game
         $this->board = new Board(); 
         $this->nextPlayer = 1; 
         $this->winner = null; 
-        $this->scores = [1 => 0, 2 => 0]; 
+       
     }
     
 

@@ -18,7 +18,6 @@ class GameController
         }
     }
     
-    
     private function createNewGame(): Game
     {
         $jugador1 = new Player("Player 1", "vermell");
@@ -33,12 +32,16 @@ class GameController
             $nombreJugador1 = $request['nom'];
             $colorJugador1 = $request['color'];
             $modoAutomatico = isset($request['modo_automatico']);
-            $nombreJugador2 = $modoAutomatico ? "Máquina" : ($request['nom2'] ?? ''); 
+            $nombreJugador2 = $modoAutomatico ? "Máquina" : ($request['nomJugador2'] ?? ''); 
+            $modoAutomatico = isset($request['mode']) && $request['mode'] === 'maquina'; 
 
-            // Crea los jugadores
             $jugador1 = new Player($nombreJugador1, $colorJugador1);
-            $jugador2 = new Player($nombreJugador2, $colorJugador1 === 'vermell' ? 'verd' : 'vermell', $modoAutomatico);
-            
+            if ($modoAutomatico) {
+                $jugador2 = new Player("Maquina", $colorJugador1 === 'vermell' ? 'verd' : 'vermell');
+            } else {
+                $jugador2 = new Player($nombreJugador2, $colorJugador1 === 'vermell' ? 'verd' : 'vermell', $modoAutomatico);
+            }
+
             // Crea la instancia del juego
             $this->game = new Game($jugador1, $jugador2);
             
@@ -49,31 +52,51 @@ class GameController
     }
 
     public function play(array $request)
-    {
-        // Si el jugador decide cerrar sesión
-        if (isset($request['exit'])) {
-            session_destroy();
-            Service::loadView('jugador'); 
-            return; 
-        }
+{
+    // Si el jugador decide cerrar sesión
+    if (isset($request['exit'])) {
+        session_destroy();
+        Service::loadView('jugador'); 
+        return; 
+    }
+
+    // Reiniciar el juego
+    if (isset($request['reset'])) {
+        $this->game->reset();
+    } elseif (isset($request['columna'])) {
+        $this->game->play((int)$request['columna']);
+    }
+
+    // Obtener información del juego
+    $winner = $this->game->getWinner();
     
-        // Reiniciar el juego
-        if (isset($request['reset'])) {
-            $this->game->reset();
-        } elseif (isset($request['columna'])) {
-            $this->game->play((int)$request['columna']);
-        }
-    
-        // Guarda el estado del juego actualizado en la sesión
+    if ($winner) {
+        // Guardar el estado del juego con el ganador y las puntuaciones
         $_SESSION['game'] = serialize($this->game);
-    
-        // Cargar la vista con el estado del juego actualizado
+        
+        // Mostrar el estado actual antes de reiniciar
         $board = $this->game->getBoard();
         $players = $this->game->getPlayers();
-        $winner = $this->game->getWinner();
         $scores = $this->game->getScores();
-    
+        
+        // Cargar la vista con el ganador
         Service::loadView('index', compact('board', 'players', 'winner', 'scores'));
+        
+        // Reiniciar el tablero después de mostrar al ganador
+        $this->game->reset(); 
+        return;
     }
+
+    // Guardar el estado del juego actualizado en la sesión si no hay ganador
+    $_SESSION['game'] = serialize($this->game);
+
+    // Cargar la vista con el estado actual del juego
+    $board = $this->game->getBoard();
+    $players = $this->game->getPlayers();
+    $scores = $this->game->getScores();
+
+    Service::loadView('index', compact('board', 'players', 'winner', 'scores'));
+}
+
     
 }    
