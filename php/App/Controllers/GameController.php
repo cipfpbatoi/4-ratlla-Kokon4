@@ -78,39 +78,53 @@ class GameController
      * @param array $request Son les dades que envia el usuari, per ejemple si vol reiniciar la partida o tancar sessió.
      */
     public function play(array $request)
-{
-    if (isset($request['exit'])) {
-        session_destroy();
-        Service::loadView('jugador'); 
-        return; 
-    }
-
-    if (isset($request['reset'])) {
-        $this->game->reset();
-    } elseif (isset($request['columna'])) {
-        $this->game->play((int)$request['columna']);
-    }
+    {
+        if (isset($request['exit'])) {
+            session_destroy();
+            Service::loadView('jugador'); 
+            return; 
+        }
     
-  
-    $winner = $this->game->getWinner();
+        if (isset($request['reset'])) {
+            $this->game->reset();
+        } elseif (isset($request['columna'])) {
+            // Movimiento del jugador humano
+            $this->game->play((int)$request['columna']);
+            
+            // Comprobar si el jugador humano ha ganado
+            $winner = $this->game->getWinner();
+            if (!$winner) {
+                // Si no hay ganador y el siguiente jugador es la máquina, hacer que juegue automáticamente
+                $nextPlayer = $this->game->getPlayers()[2]; // Obtener el jugador 2, que es la máquina
+                if ($nextPlayer->isAutomatic()) {
+                    $this->game->playAutomatic(); // Movimiento automático de la máquina
+                }
+            }
+        }
+        
+        // Comprobar de nuevo si hay un ganador después de los movimientos (del jugador y de la máquina)
+        $winner = $this->game->getWinner();
     
-    if ($winner) {
+        // Si hay un ganador, mostrar la vista de fin del juego
+        if ($winner) {
+            $_SESSION['game'] = serialize($this->game);
+            $board = $this->game->getBoard();
+            $players = $this->game->getPlayers();
+            $scores = $this->game->getScores();
+    
+            Service::loadView('index', compact('board', 'players', 'winner', 'scores'));
+            $this->game->reset(); 
+            return;
+        }
+    
+        // Guardar el estado del juego
         $_SESSION['game'] = serialize($this->game);
+    
+        // Cargar la vista del tablero sin ganador
         $board = $this->game->getBoard();
         $players = $this->game->getPlayers();
         $scores = $this->game->getScores();
- 
+    
         Service::loadView('index', compact('board', 'players', 'winner', 'scores'));
-        $this->game->reset(); 
-        return;
-    }
-
-    $_SESSION['game'] = serialize($this->game);
-
-    $board = $this->game->getBoard();
-    $players = $this->game->getPlayers();
-    $scores = $this->game->getScores();
-
-    Service::loadView('index', compact('board', 'players', 'winner', 'scores'));
-}  
+    }    
 }    

@@ -1,17 +1,30 @@
+<?php
+
+if (isset($_SESSION['error'])): ?>
+    <div class="alert alert-danger">
+        <?php echo $_SESSION['error']; ?>
+    </div>
+    <?php
+    unset($_SESSION['error']);
+endif;
+?>
+
 <div class="marcador">
     <h2>Marcador</h2>
     <p>Jugador 1: <?= $players[1]->getName() ?> - Puntuación: <?= $scores[1] ?></p>
     <p>Jugador 2: <?= $players[2]->getName() ?> - Puntuación: <?= $scores[2] ?></p>
 </div>
+
 <?php if ($winner): ?>
     <div class="mensaje-victoria">
         <p>¡Felicidades, <?= $winner->getName() ?> ha ganado la partida!</p>
     </div>
 <?php endif; ?>
+
 <form action="Game.php" method="POST">
     <div class="tauler">
         <?php 
-        $slots = $board->getSlots(); // Obtén el estado del tablero
+        $slots = $board->getSlots();
         for ($row = 1; $row <= \Joc4enRatlla\Models\Board::FILES; $row++): ?>
             <div class="fila">
                 <?php for ($col = 1; $col <= \Joc4enRatlla\Models\Board::COLUMNS; $col++): ?>
@@ -29,17 +42,16 @@
         <?php endfor; ?>
     </div>
 
-    <?php if (!$winner): // Mostrar botones solo si no hay ganador ?>
-            <div class="controls">
-                <?php for ($col = 1; $col <= \Joc4enRatlla\Models\Board::COLUMNS; $col++): ?>
-                    <button type="submit" name="columna" value="<?= $col ?>"> <?= $col ?></button>
-                <?php endfor; ?>
-            </div>
-            <?php endif; ?>
+    <?php if (!$winner): ?>
+        <div class="controls">
+            <?php for ($col = 1; $col <= \Joc4enRatlla\Models\Board::COLUMNS; $col++): ?>
+                <button type="submit" name="columna" value="<?= $col ?>"> <?= $col ?></button>
+            <?php endfor; ?>
+        </div>
+    <?php endif; ?>
+
     <div class="action-buttons">
         <button type="submit" name="reset" value="reset">Reiniciar</button>
         <button type="submit" name="exit" value="1">Cerrar sesión</button> 
     </div>
-
-    
 </form>

@@ -5,8 +5,7 @@ namespace Joc4enRatlla\Models;
 use Joc4enRatlla\Exceptions\IllegalMoveException;
 use Joc4enRatlla\Models\Board;
 use Joc4enRatlla\Models\Player;
-
-
+use PhpParser\Node\Stmt\Catch_;
 
 /**
  * Classe Game
@@ -94,24 +93,33 @@ class Game
     
 
 
-    /**
-     * Gestiona el fluxe de partida
-     *
-     * @param integer $columna El numero de la columna 
-     * @return void
-     */
-    public function play(int $columna): void {
+/**
+ * Gestiona el flujo de la partida
+ *
+ * @param integer $columna El número de la columna 
+ * @return void
+ * @throws IllegalMoveException Si el movimiento no es válido
+ */
+public function play(int $columna): void {
+    try {
+        
         if ($this->board->isValidMove($columna)) {
             $coord = $this->board->setMovementOnBoard($columna, $this->nextPlayer);
+            
             if ($this->board->checkWin($coord)) {
                 $this->winner = $this->players[$this->nextPlayer];
-                $this->scores[$this->nextPlayer]++; 
+                $this->scores[$this->nextPlayer]++;
             }
-            $this->nextPlayer = $this->nextPlayer === 1 ? 2 : 1; 
+            $this->nextPlayer = $this->nextPlayer === 1 ? 2 : 1;
         } else {
-            throw new IllegalMoveException('Invalid move');
+            throw new IllegalMoveException('Movimiento no válido');
         }
+    } catch (IllegalMoveException $e) {
+        $_SESSION['error'] = "Movimiento no válido: " . $e->getMessage();
+      
     }
+}
+
 
     /**
     * Perform automatic move for the AI player
@@ -139,10 +147,7 @@ class Game
                     $this->play($col);
                     return;
                 }
-            } else {
-                throw new IllegalMoveException('Invalid move');
-            }
-        }
+            } 
 
         $possibles = [];
         for ($col = 1; $col <= Board::COLUMNS; $col++) {
@@ -156,7 +161,7 @@ class Game
             $this->play($possibles[$randomIndex]);
         }
     }
-
+    }
 
     /**
      * Guarda los atributos de la partida en la sesion

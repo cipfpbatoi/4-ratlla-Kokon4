@@ -1,62 +1,85 @@
 <?php
-
 namespace Joc4enRatlla\Models;
 
 /**
- * Classe  Jugador
+ * Classe Jugador
  * Representa un jugador amb el seu nom, color y si es o no la máquina
  */
 class Player {
     /**
-     * @var string name El nom del jugador
-     * @var string color El color del jugador
-     * @var boolean isAutomatic Si el jugador es la máquina o no
+     * @var string $name El nom del jugador
+     * @var string $color El color del jugador
+     * @var boolean $isAutomatic Si el jugador es la máquina o no
      */
-    private $name;  
-    private $color;     
-    private $isAutomatic; 
+    private $name;
+    private $color;
+    private $isAutomatic;
 
 
     /**
      * Constructor de la clase Jugador
      *
-     * @param String $name El nom del jugador
-     * @param String $color El color del jugador
+     * @param string $name El nom del jugador
+     * @param string $color El color del jugador
      * @param boolean $isAutomatic Si es la máquina o no
      */
-    public function __construct( $name, $color, $isAutomatic = false) {
+    public function __construct(string $name, string $color, bool $isAutomatic = false) {
         $this->name = $name;
         $this->color = $color;
-        $this->isAutomatic = false;
+        $this->isAutomatic = $isAutomatic; 
     }
 
-
     /**
-     * Undocumented function
+     * Obté el nom del jugador
      *
-     * @return void
+     * @return string
      */
-    public function getName(){
+    public function getName(): string {
         return $this->name;
     }
 
-    public function getColor(){
+    /**
+     * Obté el color del jugador
+     *
+     * @return string
+     */
+    public function getColor(): string {
         return $this->color;
     }
 
-    public function getIsAutomatic(){
-        return $this->isAutomatic;
+    /**
+     * Retorna si el jugador és automàtic
+     *
+     * @return bool
+     */
+    public function isAutomatic(): bool {
+        return $this->isAutomatic; 
     }
 
-    public function setName($name){
+    /**
+     * Defineix el nom del jugador
+     *
+     * @param string $name
+     */
+    public function setName(string $name): void {
         $this->name = $name;
     }
 
-    public function setColor($color){
+    /**
+     * Defineix el color del jugador
+     *
+     * @param string $color
+     */
+    public function setColor(string $color): void {
         $this->color = $color;
     }
 
-    public function setAutomatic(){
+    /**
+     * Defineix que el jugador és automàtic
+     *
+     * @return void
+     */
+    public function setAutomatic(): void {
         $this->isAutomatic = true;
     }
 }
