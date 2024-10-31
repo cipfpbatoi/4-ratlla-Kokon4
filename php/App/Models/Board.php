@@ -2,19 +2,28 @@
 
 namespace Joc4enRatlla\Models;
 
-
 /**
- * Classe Board
- * Representa la tabla del 4 en ralla.
+ * Class Board
+ * 
+ * Representa la tabla del juego "4 en raya". 
+ * Gestiona la configuración inicial del tablero, las jugadas de los jugadores, 
+ * y verifica condiciones de victoria.
  */
-class Board{
+class Board
+{
     /** 
-     * @var files El numero de files de la tabla
-     * @var columnes El numero de columnes de la tabla
-     * @var directions Array que conte les 4 direccions
-    */ 
+     * @var int El número de filas de la tabla (constante).
+     */
     public const FILES = 6;
+
+    /** 
+     * @var int El número de columnas de la tabla (constante).
+     */
     public const COLUMNS = 7;
+
+    /** 
+     * @var array Array que contiene las 4 direcciones posibles para verificar el 4 en raya.
+     */
     public const DIRECTIONS = [
         [0, 1],   // Horizontal derecha
         [1, 0],   // Vertical abajo
@@ -23,39 +32,40 @@ class Board{
     ];
 
     /**
-     * Array que representa les caselles
-     *
-     * @var slots son les caselles de la tabla.
+     * @var array Representa las casillas del tablero.
      */
     private array $slots; 
 
-
     /**
-     * Constructor de la classe Board
+     * Constructor de la clase Board.
      * 
-     * Llama a un metodo que la inicializa vacía
+     * Inicializa el tablero vacío llamando a un método estático que lo configura.
      */
-    public function __construct(){
-     $this->slots = self::initializeBoard();
+    public function __construct()
+    {
+        $this->slots = self::initializeBoard();
     }
 
     /**
-     * Inicializa la Graella vacía
-     * @return array La graella vacía
+     * Inicializa la cuadrícula vacía.
+     *
+     * @return array La cuadrícula vacía, representada como un array bidimensional.
      */
-    private static function initializeBoard(): array {
+    private static function initializeBoard(): array 
+    {
         return array_fill(1, self::FILES, array_fill(1, self::COLUMNS, 0));
     }
-        
 
     /**
-     * Gestiona el moviment dels jugadors, els pinta en la tabla
+     * Gestiona el movimiento de los jugadores, actualizando el tablero.
      *
-     * @param integer $column Numero de columna
-     * @param integer $player El jugador que fa el moviment
-     * @return array retorna la graella en la fitxa posada.
+     * @param int $column Número de la columna en la que se realiza el movimiento.
+     * @param int $player El jugador que realiza el movimiento (1 o 2).
+     * @return array Coordenadas (fila, columna) de la casilla donde se colocó la ficha.
+     * @throws \Exception Si la columna está llena.
      */
-    public function setMovementOnBoard(int $column, int $player): array {
+    public function setMovementOnBoard(int $column, int $player): array 
+    {
         for ($row = self::FILES; $row >= 1; $row--) {
             if ($this->slots[$row][$column] == 0) {
                 $this->slots[$row][$column] = $player;
@@ -66,14 +76,17 @@ class Board{
     }
 
     /**
-     * Comprova si hi ha cuatre en ratlla.
-     * @param array Es pasen les cordenades per verificar si hi ha 4 en ralla
-     * @return bool Retorna true si hi ha 4 en ralla, returna false si no
+     * Verifica si hay 4 en raya en la dirección especificada.
+     *
+     * @param array $coord Coordenadas (fila, columna) de la última jugada.
+     * @return bool Retorna true si hay 4 en raya, false si no.
      */
-    public function checkWin(array $coord): bool {
+    public function checkWin(array $coord): bool 
+    {
         $player = $this->slots[$coord[0]][$coord[1]];
         foreach (self::DIRECTIONS as $direction) {
             $count = 1;
+            // Verificar en una dirección
             for ($multiplier = 1; $multiplier <= 3; $multiplier++) {
                 $newRow = $coord[0] + $direction[0] * $multiplier;
                 $newCol = $coord[1] + $direction[1] * $multiplier;
@@ -83,6 +96,7 @@ class Board{
                     break;
                 }
             }
+            // Verificar en la dirección opuesta
             for ($multiplier = 1; $multiplier <= 3; $multiplier++) {
                 $newRow = $coord[0] - $direction[0] * $multiplier;
                 $newCol = $coord[1] - $direction[1] * $multiplier;
@@ -97,49 +111,49 @@ class Board{
         return false;
     }
 
-
     /**
-     * Verifica si les coordenades estan dins de la graella
+     * Verifica si las coordenadas están dentro de los límites de la cuadrícula.
      *
-     * @param integer $row Files 
-     * @param integer $col Columnes
-     * @return boolean True si esta dins de la graella, false si no
+     * @param int $row Fila a verificar.
+     * @param int $col Columna a verificar.
+     * @return bool True si está dentro de la cuadrícula, false si no.
      */
-    private function isInBounds(int $row, int $col): bool {
+    private function isInBounds(int $row, int $col): bool 
+    {
         return $row >= 1 && $row <= self::FILES && $col >= 1 && $col <= self::COLUMNS;
     }
 
     /**
-     * Verifica si el movimient es válid
+     * Verifica si el movimiento en la columna especificada es válido.
      *
-     * @param integer $column El numero de columna
-     * @return boolean True si el movimiento es válido, false si no.
+     * @param int $column Número de la columna a verificar.
+     * @return bool True si el movimiento es válido, false si no.
      */
-    public function isValidMove(int $column): bool {
+    public function isValidMove(int $column): bool 
+    {
         return $this->slots[1][$column] == 0;
     }
 
-
     /**
-     * Verifica si la graella esta plena
+     * Verifica si la cuadrícula está llena.
      *
-     * @return boolean True si esta plena, false si no
+     * @return bool True si está llena, false si no.
      */
-    public function isFull(): bool {
+    public function isFull(): bool 
+    {
         for ($col = 1; $col <= self::COLUMNS; $col++) {
             if ($this->isValidMove($col)) return false;
         }
         return true;
     }
 
-
     /**
-     * Obté l'array de la graella
+     * Obtiene el array que representa la cuadrícula.
      *
-     * @return array Retorna el array de la graella
+     * @return array Retorna el array que representa la cuadrícula.
      */
-    public function getSlots(): array {
+    public function getSlots(): array 
+    {
         return $this->slots;
     }
 }
-?>

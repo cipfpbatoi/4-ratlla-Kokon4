@@ -6,35 +6,43 @@ use Joc4enRatlla\Models\Game;
 use Joc4enRatlla\Services\Service;
 
 /**
- * GameController
- * Classe encarregada de controlar el fluxe de joc.
+ * Class GameController
+ * 
+ * Controlador encargado de gestionar el flujo del juego.
+ * Se encarga de inicializar el juego, manejar las solicitudes del formulario 
+ * y gestionar las interacciones entre los jugadores.
  */
 class GameController
 {
     /**
-     * @var Game El objecte joc que gastara el controller.
+     * @var Game $game Instancia del objeto juego que maneja el controlador.
      */
     private Game $game;
 
     /**
-     * Constructor de la clase GameController 
-     * @param array $request Son les dades que se li serán asignades
-     * per formulari
+     * GameController constructor.
+     * 
+     * Inicializa una nueva instancia de GameController y 
+     * restaura el juego si existe en la sesión. 
+     * También maneja las solicitudes POST para inicializar el juego.
+     *
+     * @param array $request Datos enviados desde el formulario.
      */
     public function __construct(array $request = [])
     {
+        // Intenta restaurar el juego de la sesión o crea un nuevo juego.
         $this->game = Game::restore() ?? $this->createNewGame();
         
+        // Maneja la solicitud POST si se recibe.
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->handlePost($request);
         }
     }
     
-
     /**
-     * Crea un nou Joc cuan es demane reiniciar la partida.
+     * Crea un nuevo juego cuando se solicita reiniciar la partida.
      *
-     * @return Game El nou joc.
+     * @return Game Nueva instancia de Game.
      */
     private function createNewGame(): Game
     {
@@ -44,13 +52,17 @@ class GameController
     }
     
     /**
-     * Gestiona les dades del primer formulari.
+     * Maneja las solicitudes de datos del formulario inicial.
      *
-     * @param array $request Les dades del formulari
-     * @return void No retorna res, ja que només asigna els valors.
+     * Se encarga de asignar los valores de los jugadores y establecer 
+     * el modo de juego (manual o automático).
+     *
+     * @param array $request Datos enviados desde el formulario.
+     * @return void No retorna nada, solo asigna los valores a las propiedades.
      */
     private function handlePost(array $request): void
     {
+        // Verifica que se hayan enviado los datos del jugador.
         if (isset($request['nom']) && isset($request['color'])) {
             $nombreJugador1 = $request['nom'];
             $colorJugador1 = $request['color'];
@@ -60,52 +72,58 @@ class GameController
 
             $jugador1 = new Player($nombreJugador1, $colorJugador1);
             if ($modoAutomatico) {
-                $jugador2 = new Player("Maquina",$colorJugador1 === 'vermell' ? 'verd' : 'vermell', $modoAutomatico);
+                $jugador2 = new Player("Maquina", $colorJugador1 === 'vermell' ? 'verd' : 'vermell', $modoAutomatico);
             } else {
                 $jugador2 = new Player($nombreJugador2, $colorJugador1 === 'vermell' ? 'verd' : 'vermell', $modoAutomatico);
             }
 
             $this->game = new Game($jugador1, $jugador2);
 
+            // Guarda el estado del juego y los puntajes en la sesión.
             $_SESSION['game'] = serialize($this->game);
             $_SESSION['scores'] = [1 => 0, 2 => 0]; 
         }
     }
 
     /**
-     * Ejecuta el joc.
+     * Ejecuta el juego en función de las solicitudes del usuario.
      *
-     * @param array $request Son les dades que envia el usuari, per ejemple si vol reiniciar la partida o tancar sessió.
+     * Maneja acciones como reiniciar la partida, cerrar sesión 
+     * o realizar un movimiento en el juego.
+     *
+     * @param array $request Datos enviados por el usuario, por ejemplo, si desea reiniciar la partida o cerrar sesión.
+     * @return void No retorna nada, pero carga la vista correspondiente.
      */
-    public function play(array $request)
+    public function play(array $request): void
     {
+        // Maneja la solicitud para salir del juego.
         if (isset($request['exit'])) {
             session_destroy();
             Service::loadView('jugador'); 
             return; 
         }
     
+        // Maneja la solicitud para reiniciar el juego.
         if (isset($request['reset'])) {
             $this->game->reset();
         } elseif (isset($request['columna'])) {
-            // Movimiento del jugador humano
+            // Procesa la jugada en la columna seleccionada.
             $this->game->play((int)$request['columna']);
             
-            // Comprobar si el jugador humano ha ganado
             $winner = $this->game->getWinner();
+            // Si no hay ganador, verifica si el siguiente jugador es automático.
             if (!$winner) {
-                // Si no hay ganador y el siguiente jugador es la máquina, hacer que juegue automáticamente
-                $nextPlayer = $this->game->getPlayers()[2]; // Obtener el jugador 2, que es la máquina
+                $nextPlayer = $this->game->getPlayers()[2]; 
                 if ($nextPlayer->isAutomatic()) {
-                    $this->game->playAutomatic(); // Movimiento automático de la máquina
+                    $this->game->playAutomatic(); 
                 }
             }
         }
         
-        // Comprobar de nuevo si hay un ganador después de los movimientos (del jugador y de la máquina)
+        // Comprueba si hay un ganador después de cada jugada.
         $winner = $this->game->getWinner();
     
-        // Si hay un ganador, mostrar la vista de fin del juego
+        // Si hay un ganador, reinicia el juego y carga la vista.
         if ($winner) {
             $_SESSION['game'] = serialize($this->game);
             $board = $this->game->getBoard();
@@ -117,14 +135,12 @@ class GameController
             return;
         }
     
-        // Guardar el estado del juego
+        // Guarda el estado actual del juego en la sesión y carga la vista.
         $_SESSION['game'] = serialize($this->game);
-    
-        // Cargar la vista del tablero sin ganador
         $board = $this->game->getBoard();
         $players = $this->game->getPlayers();
         $scores = $this->game->getScores();
     
         Service::loadView('index', compact('board', 'players', 'winner', 'scores'));
     }    
-}    
+}

@@ -1,27 +1,34 @@
 <?php
+
 namespace Joc4enRatlla\Models;
 
 /**
- * Classe Jugador
- * Representa un jugador amb el seu nom, color y si es o no la máquina
+ * Class Player
+ * 
+ * Representa un jugador en el juego con su nombre, color y si es una máquina o un jugador humano.
  */
 class Player {
     /**
-     * @var string $name El nom del jugador
-     * @var string $color El color del jugador
-     * @var boolean $isAutomatic Si el jugador es la máquina o no
+     * @var string El nombre del jugador.
      */
-    private $name;
-    private $color;
-    private $isAutomatic;
-
+    private string $name;
 
     /**
-     * Constructor de la clase Jugador
+     * @var string El color del jugador.
+     */
+    private string $color;
+
+    /**
+     * @var bool Indica si el jugador es una máquina (IA).
+     */
+    private bool $isAutomatic;
+
+    /**
+     * Constructor de la clase Player.
      *
-     * @param string $name El nom del jugador
-     * @param string $color El color del jugador
-     * @param boolean $isAutomatic Si es la máquina o no
+     * @param string $name El nombre del jugador.
+     * @param string $color El color del jugador.
+     * @param bool $isAutomatic Indica si es la máquina (por defecto es false).
      */
     public function __construct(string $name, string $color, bool $isAutomatic = false) {
         $this->name = $name;
@@ -30,52 +37,54 @@ class Player {
     }
 
     /**
-     * Obté el nom del jugador
+     * Obtiene el nombre del jugador.
      *
-     * @return string
+     * @return string El nombre del jugador.
      */
     public function getName(): string {
         return $this->name;
     }
 
     /**
-     * Obté el color del jugador
+     * Obtiene el color del jugador.
      *
-     * @return string
+     * @return string El color del jugador.
      */
     public function getColor(): string {
         return $this->color;
     }
 
     /**
-     * Retorna si el jugador és automàtic
+     * Indica si el jugador es automático (máquina).
      *
-     * @return bool
+     * @return bool True si el jugador es automático, false en caso contrario.
      */
     public function isAutomatic(): bool {
         return $this->isAutomatic; 
     }
 
     /**
-     * Defineix el nom del jugador
+     * Define el nombre del jugador.
      *
-     * @param string $name
+     * @param string $name El nuevo nombre del jugador.
+     * @return void
      */
     public function setName(string $name): void {
         $this->name = $name;
     }
 
     /**
-     * Defineix el color del jugador
+     * Define el color del jugador.
      *
-     * @param string $color
+     * @param string $color El nuevo color del jugador.
+     * @return void
      */
     public function setColor(string $color): void {
         $this->color = $color;
     }
 
     /**
-     * Defineix que el jugador és automàtic
+     * Define que el jugador es automático (máquina).
      *
      * @return void
      */
