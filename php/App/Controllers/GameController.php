@@ -30,6 +30,7 @@ class GameController
      */
     public function __construct(array $request = [])
     {
+        
         // Intenta restaurar el juego de la sesión o crea un nuevo juego.
         $this->game = Game::restore() ?? $this->createNewGame();
         
@@ -78,7 +79,6 @@ class GameController
             }
 
             $this->game = new Game($jugador1, $jugador2);
-
             // Guarda el estado del juego y los puntajes en la sesión.
             $_SESSION['game'] = serialize($this->game);
             $_SESSION['scores'] = [1 => 0, 2 => 0]; 
