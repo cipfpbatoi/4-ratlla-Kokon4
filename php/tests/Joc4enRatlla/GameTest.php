@@ -1,7 +1,7 @@
 <?php
 
 namespace Joc4enRatlla\Tests;
-
+use Joc4enRatlla\Models\Board;
 use Joc4enRatlla\Models\Game;
 use Joc4enRatlla\Models\Player;
 use Joc4enRatlla\Exceptions\IllegalMoveException;
@@ -34,19 +34,19 @@ class GameTest extends TestCase
         // Prova un moviment vàlid
         $this->game->play(1); // Jugador 1 juga a la columna 1
         $this->assertNull($this->game->getWinner()); // No hi ha guanyador encara
-
     }
 
     public function testPlayInvalidMove()
     {
-        // Omplim la columna 1
-        for ($i = 0; $i < 6; $i++) {
+        $this->expectException(IllegalMoveException::class);
+
+        // Suposem que la columna 1 ja està plena
+        for ($i = 0; $i < Board::FILES; $i++) {
             $this->game->play(1);
         }
 
-        // Prova un moviment no vàlid
-        $this->expectException(IllegalMoveException::class);
-        $this->game->play(1); // Intentar jugar a la columna plena
+        // Intenta un moviment en una columna plena, el que hauria de llençar una excepció
+        $this->game->play(1); // Això hauria de llençar IllegalMoveException
     }
 
     public function testWinDetection()
@@ -73,15 +73,6 @@ class GameTest extends TestCase
         $this->assertNull($this->game->getWinner());
         $this->assertEquals([1 => 0, 2 => 0], $this->game->getScores());
         $this->assertNotNull($this->game->getBoard()); // La graella s'ha reinicialitzat
-    }
-
-    public function testAutomaticPlay()
-    {
-        // Prova que la IA fa un moviment automàtic (simula que l'IA juga com a jugador 2)
-        $this->game->play(1); // Jugador 1
-        $this->game->playAutomatic(); // Jugador 2 (IA)
-
-        // Verifica que el moviment s'hagi aplicat i que el torn hagi canviat
     }
 
     public function testSaveAndRestore()

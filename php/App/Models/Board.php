@@ -131,8 +131,15 @@ class Board
      */
     public function isValidMove(int $column): bool 
     {
-        return $this->slots[1][$column] == 0;
+      
+        for ($row = Board::FILES; $row >= 1; $row--) { 
+            if ($this->slots[$row][$column] == 0) {
+                return true; 
+            }
+        }
+        return false; 
     }
+    
 
     /**
      * Verifica si la cuadrícula está llena.

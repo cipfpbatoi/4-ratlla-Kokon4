@@ -30,4 +30,8 @@ class GameLogger
     {
         $this->logger->error($message);
     }
+    public function logReset(): void
+    {
+        $this->logger->info("The game has been reset.");
+    }
 }

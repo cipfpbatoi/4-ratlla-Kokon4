@@ -58,6 +58,7 @@ class Game
         $this->scores = [1 => 0, 2 => 0];
 
         $this->logger = new GameLogger();
+        
     }
 
     /**
@@ -105,7 +106,7 @@ class Game
         $this->board = new Board(); 
         $this->nextPlayer = 1; 
         $this->winner = null; 
-        $this->scores = [1 => 0, 2 => 0]; // Reinicia el marcador
+        $this->logger->logReset();
     }
 
     /**
@@ -126,13 +127,15 @@ class Game
                 if ($this->board->checkWin($coord)) {
                     $this->winner = $this->players[$this->nextPlayer];
                     $this->scores[$this->nextPlayer]++;
+                    $this->logger->logWin($playerName); 
                 }
-                $this->nextPlayer = $this->nextPlayer === 1 ? 2 : 1; // Cambia de jugador
+                $this->nextPlayer = $this->nextPlayer === 1 ? 2 : 1; 
             } else {
                 throw new IllegalMoveException('Movimiento no válido');
             }
         } catch (IllegalMoveException $e) {
             $_SESSION['error'] = "Movimiento no válido: " . $e->getMessage();
+            $this->logger->logError("Illegal move attempt: " . $e->getMessage());
         }
     }
 
