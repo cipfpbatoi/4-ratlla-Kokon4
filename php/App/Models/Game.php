@@ -124,6 +124,7 @@ class Game
                 $playerName = $this->players[$this->nextPlayer]->getName();
                 $this->logger->logMove($playerName, $columna);
 
+                
                 if ($this->board->checkWin($coord)) {
                     $this->winner = $this->players[$this->nextPlayer];
                     $this->scores[$this->nextPlayer]++;

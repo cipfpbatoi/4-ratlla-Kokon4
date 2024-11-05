@@ -1,6 +1,6 @@
 <?php
-
 namespace Joc4enRatlla\Tests;
+
 use Joc4enRatlla\Models\Board;
 use Joc4enRatlla\Models\Game;
 use Joc4enRatlla\Models\Player;
@@ -38,14 +38,10 @@ class GameTest extends TestCase
 
     public function testPlayInvalidMove()
     {
-        $this->expectException(IllegalMoveException::class);
-
-        // Suposem que la columna 1 ja està plena
-        for ($i = 0; $i < Board::FILES; $i++) {
+        for ($i = 1; $i <= Board::FILES; $i++) {
             $this->game->play(1);
         }
-
-        // Intenta un moviment en una columna plena, el que hauria de llençar una excepció
+        $this->expectException(IllegalMoveException::class);
         $this->game->play(1); // Això hauria de llençar IllegalMoveException
     }
 
@@ -84,6 +80,7 @@ class GameTest extends TestCase
         // Restaura el joc
         $restoredGame = Game::restore();
 
+        
         $this->assertNotNull($restoredGame);
         $this->assertEquals($this->game->getBoard(), $restoredGame->getBoard());
         $this->assertEquals($this->game->getScores(), $restoredGame->getScores());

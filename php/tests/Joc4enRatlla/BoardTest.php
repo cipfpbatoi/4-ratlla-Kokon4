@@ -85,6 +85,11 @@ class BoardTest extends TestCase
         // Verifica si un movimiento es válido
         $this->assertTrue($this->board->isValidMove(1), "Debería ser un movimiento válido");
         $this->board->setMovementOnBoard(1, 1);
+        $this->board->setMovementOnBoard(1, 2);
+        $this->board->setMovementOnBoard(1, 1);
+        $this->board->setMovementOnBoard(1, 2);
+        $this->board->setMovementOnBoard(1, 1);
+        $this->board->setMovementOnBoard(1, 2);
         $this->assertFalse($this->board->isValidMove(1), "Debería ser un movimiento no válido");
     }
 

@@ -9,11 +9,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $gameController = new GameController($_POST);
     $gameController->play($_POST); 
 } else {
-
     if (!isset($_SESSION['game'])) {
         loadView('jugador'); 
     } else {
-    
         $gameController = new GameController();
         $gameController->play([]); 
     }
