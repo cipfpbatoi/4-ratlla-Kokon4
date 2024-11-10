@@ -11,7 +11,6 @@
         <p>¡Felicidades, <?= $winner->getName() ?> ha ganado la partida!</p>
     </div>
 <?php endif; ?>
-
 <form action="Game.php" method="POST">
     <div class="tauler">
         <?php 
@@ -43,6 +42,8 @@
 
     <div class="action-buttons">
         <button type="submit" name="reset" value="reset">Reiniciar</button>
-        <button type="submit" name="exit" value="1">Cerrar sesión</button> 
+        <button type="submit" name="exit" value="1">Cerrar sesión</button>
+        <button type="submit" name="save-game" value="save">Guardar Partida</button>
+        <button type="submit" name="load-game" value="load">Cargar Partida</button>
     </div>
 </form>
