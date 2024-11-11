@@ -7,47 +7,47 @@ use Joc4enRatlla\Controllers\GameController;
 use Joc4enRatlla\Models\User;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name'], $_POST['password'])) {
-    // Comprovem si l'usuari ja existeix
     $nom_usuari = $_POST['name'];
     $password = $_POST['password'];
 
-    // Busquem l'usuari per nom
+    // Buscamos al usuario por su nombre de usuario
     $user = User::getByNomUsuari($nom_usuari);
 
     if ($user) {
-        // Si l'usuari ja existeix, validem la contrasenya
-        if (password_verify($password, $user->getContrasenya())) {
-            // Guardem els dades de l'usuari a la sessió
+        // Obtenemos el hash almacenado en la base de datos
+        $storedHash = $user->getContrasenya();
+
+        // Comparamos la contraseña proporcionada en texto plano con el hash almacenado
+        if (password_verify($password, $storedHash)) {
+            // La contraseña es correcta
             $_SESSION['user_data'] = [
-                'name' => $nom_usuari,
-                'password' => $password
+                'name' => $nom_usuari
+                // No almacenes la contraseña en la sesión, solo el nombre de usuario
             ];
-            loadView('jugador'); // Mostrar la pantalla de joc
+            loadView('jugador'); // Mostrar la pantalla de juego
         } else {
-            // Si la contrasenya no és correcta, mostrar un missatge d'error
+            // La contraseña es incorrecta
             echo "Contrasenya incorrecta.";
-            loadView('validacio'); // Tornar al formulari de validació
+            loadView('validacio'); // Volver al formulario de validación
         }
     } else {
-        // Si l'usuari no existeix, el creem
+        // Si el usuario no existe, lo creamos
         $user = new User($nom_usuari, $password);
         if ($user->save()) {
-            // Si l'usuari s'ha guardat correctament, es guarda a la sessió i es mostra la pantalla de joc
+            // Usuario creado correctamente
             $_SESSION['user_data'] = [
-                'name' => $nom_usuari,
-                'password' => $password
+                'name' => $nom_usuari
             ];
-            loadView('jugador'); // Mostrar la pantalla de joc
+            loadView('jugador'); // Mostrar la pantalla de juego
         } else {
-            // Si no s'ha pogut guardar l'usuari, mostrar un error
+            // No se pudo registrar al usuario
             echo "No s'ha pogut registrar l'usuari.";
-            loadView('validacio'); // Tornar al formulari de validació
+            loadView('validacio'); // Volver al formulario de validación
         }
     }
-
     exit;
 } else {
-    // Si no s'han enviat dades, mostrem el formulari de validació
+    // Si no se han enviado los datos, mostrar el formulario de validación
     loadView('validacio');
     exit;
 }

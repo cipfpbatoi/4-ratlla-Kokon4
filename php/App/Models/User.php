@@ -15,8 +15,6 @@ class User
         $this->nom_usuari = $nom_usuari;
         $this->contrasenya = password_hash($contrasenya, PASSWORD_DEFAULT);
     }
-
-    // Funció per obtenir la connexió a la base de dades
     private static function getDB()
     {
         static $pdo = null;
@@ -37,47 +35,39 @@ class User
 
         return $pdo;
     }
-
-    // Mètode per obtenir un usuari per nom d'usuari
     public static function getByNomUsuari($nom_usuari)
     {
-        $db = self::getDB(); // Obtenim la connexió a la base de dades
+        $db = self::getDB();
         $stmt = $db->prepare("SELECT * FROM usuaris WHERE nom_usuari = :nom_usuari");
         $stmt->bindParam(':nom_usuari', $nom_usuari);
         $stmt->execute();
 
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($user) {
-            $userObj = new self($user['nom_usuari'], $user['contrasenya']);
+            $userObj = new self($user['nom_usuari'], '');
+            $userObj->contrasenya = $user['contrasenya'];
             return $userObj;
         }
 
-        return null; // Si no s'ha trobat l'usuari
+        return null;
     }
 
-    // Mètode per guardar un nou usuari a la base de dades
     public function save()
     {
         try {
-            $db = self::getDB(); // Obtenim la connexió amb la base de dades
-
-            // Prepara la consulta SQL per inserir el nou usuari
+            $db = self::getDB();
             $stmt = $db->prepare("INSERT INTO usuaris (nom_usuari, contrasenya) VALUES (:nom_usuari, :contrasenya)");
             $stmt->bindParam(':nom_usuari', $this->nom_usuari);
             $stmt->bindParam(':contrasenya', $this->contrasenya);
-
-            // Executa la consulta
             $stmt->execute();
             
-            return true; // Retorna `true` si l'usuari s'ha guardat correctament
+            return true;
         } catch (\PDOException $e) {
-            // Registra l'error o llança una excepció
+ 
             error_log("Error al guardar l'usuari: " . $e->getMessage());
-            return false; // Retorna `false` si hi ha hagut un error
+            return false;
         }
     }
-
-    // Getters per obtenir les dades de l'usuari
     public function getNomUsuari()
     {
         return $this->nom_usuari;
